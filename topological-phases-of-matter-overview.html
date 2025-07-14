@@ -1,0 +1,1424 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Topological Phases of Matter: A Geometric Revolution in Quantum Physics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tiempos+Headline:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        :root {
+            --primary: #0f766e;
+            --secondary: #134e4a;
+            --accent: #f59e0b;
+            --neutral: #374151;
+            --base: #f8fafc;
+            --surface: #ffffff;
+        }
+        
+        .font-tiempos { font-family: 'Tiempos Headline', serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--neutral);
+            overflow-x: hidden;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(15, 118, 110, 0.95) 0%, rgba(19, 78, 74, 0.9) 100%);
+        }
+        
+        .toc-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid #e2e8f0;
+            z-index: 40;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 2rem;
+            height: 70vh;
+        }
+        
+        .bento-main {
+            grid-row: 1 / -1;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+        
+        .bento-side {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .quantum-visual {
+            background: radial-gradient(circle at 30% 70%, rgba(245, 158, 11, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(15, 118, 110, 0.4) 0%, transparent 50%);
+            position: absolute;
+            inset: 0;
+        }
+        
+        .citation-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted var(--primary);
+            transition: all 0.2s ease;
+        }
+        
+        .citation-link:hover {
+            background-color: rgba(15, 118, 110, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            margin: 4rem 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        
+        .quote-large {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--primary);
+            border-left: 4px solid var(--accent);
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .mermaid {
+            background: var(--surface) !important;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            max-height: 800px;
+            cursor: grab;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transform-origin: center center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mermaid:active {
+            cursor: grabbing;
+        }
+        
+        .mermaid:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mermaid svg {
+            max-width: none;
+            max-height: none;
+            width: auto;
+            height: auto;
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
+        
+        .mermaid-container {
+            display: flex;
+            justify-content: center;
+            min-height: 300px;
+            max-height: 800px;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mermaid-container .mermaid {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            cursor: grab;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .mermaid-container .mermaid svg {
+            max-width: 100%;
+            height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .mermaid-container .mermaid:active {
+            cursor: grabbing;
+        }
+
+        .mermaid-container.zoomed .mermaid {
+            height: 100%;
+            width: 100%;
+            cursor: grab;
+        }
+
+        .mermaid-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mermaid-control-btn {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #374151;
+            font-size: 14px;
+            min-width: 36px;
+            height: 36px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mermaid-control-btn:hover {
+            background: #f8fafc;
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-1px);
+        }
+
+        .mermaid-control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        @media (max-width: 1024px) {
+            .toc-fixed {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .mermaid-control-btn:not(.reset-zoom) {
+                display: none;
+            }
+            .mermaid-controls {
+                top: auto;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                height: auto;
+            }
+
+            .bento-main {
+                grid-row: auto;
+                min-height: 50vh;
+            }
+
+            .main-content {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .hero-gradient h1 {
+                font-size: 2.5rem;
+                line-height: 1.2;
+            }
+
+            .hero-gradient p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-gradient h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+  </head>
+
+  <body class="font-inter">
+    <!-- Fixed Table of Contents -->
+    <nav class="toc-fixed">
+      <div class="mb-8">
+        <h3 class="font-tiempos text-lg font-semibold text-gray-900 mb-4">Contents</h3>
+        <ul class="space-y-3 text-sm">
+          <li>
+            <a href="#hero" class="text-gray-600 hover:text-teal-700 transition-colors">Introduction</a>
+          </li>
+          <li>
+            <a href="#defining" class="text-gray-600 hover:text-teal-700 transition-colors">Defining Topological Phases</a>
+          </li>
+          <li>
+            <a href="#characteristics" class="text-gray-600 hover:text-teal-700 transition-colors">Key Characteristics</a>
+          </li>
+          <li>
+            <a href="#classification" class="text-gray-600 hover:text-teal-700 transition-colors">Classification</a>
+          </li>
+          <li>
+            <a href="#examples" class="text-gray-600 hover:text-teal-700 transition-colors">Prominent Examples</a>
+          </li>
+          <li>
+            <a href="#experimental" class="text-gray-600 hover:text-teal-700 transition-colors">Experimental Signatures</a>
+          </li>
+          <li>
+            <a href="#theoretical" class="text-gray-600 hover:text-teal-700 transition-colors">Theoretical Frameworks</a>
+          </li>
+          <li>
+            <a href="#implications" class="text-gray-600 hover:text-teal-700 transition-colors">Future Implications</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="border-t pt-6">
+        <h4 class="font-medium text-gray-900 mb-3">Key Concepts</h4>
+        <div class="space-y-2 text-xs text-gray-500">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-circle text-teal-600 w-2 h-2"></i>
+            <span>Topological Invariants</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fas fa-circle text-amber-500 w-2 h-2"></i>
+            <span>Berry Phase</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fas fa-circle text-teal-600 w-2 h-2"></i>
+            <span>Bulk-Boundary</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fas fa-circle text-amber-500 w-2 h-2"></i>
+            <span>Edge States</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section id="hero" class="min-h-screen px-8 py-16">
+        <div class="max-w-7xl mx-auto">
+          <div class="bento-grid">
+            <!-- Main Hero Content -->
+            <div class="bento-main hero-gradient relative">
+              <div class="quantum-visual"></div>
+              <div class="absolute inset-0 flex items-center justify-center p-12">
+                <div class="text-center text-white">
+                  <h1 class="font-tiempos text-5xl md:text-7xl font-semibold italic leading-tight mb-6">
+                    Topological Phases
+                    <br/>
+                    <span class="text-amber-300">of Matter</span>
+                  </h1>
+                  <p class="text-xl md:text-2xl font-light opacity-90 max-w-2xl mx-auto">
+                    A Geometric Revolution in Quantum Physics
+                  </p>
+                </div>
+              </div>
+              <img src="https://kimi-web-img.moonshot.cn/img/postquantum.com/e31b683feaa1d3e6bdbb59a52e5e613ce0912be1.jpg" alt="Abstract visualization of quantum wave interference patterns" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30" size="wallpaper" aspect="wide" query="quantum wave interference patterns" referrerpolicy="no-referrer" data-modified="1" data-score="11599.00"/>
+            </div>
+
+            <!-- Side Elements -->
+            <div class="bento-side">
+              <div class="bg-white rounded-lg p-6 shadow-lg">
+                <h3 class="font-tiempos text-lg font-semibold text-gray-900 mb-3">Core Principle</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                  Quantum states distinguished by properties that remain unchanged under continuous deformations,
+                  provided the energy gap remains open. Robustness emerges from global topological invariants.
+                </p>
+              </div>
+
+              <div class="bg-amber-50 rounded-lg p-6 border border-amber-200">
+                <h3 class="font-tiempos text-lg font-semibold text-gray-900 mb-3">Key Manifestations</h3>
+                <ul class="text-sm text-gray-700 space-y-2">
+                  <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-teal-600 w-4"></i>
+                    Quantized physical responses
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-teal-600 w-4"></i>
+                    Protected edge/surface states
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-teal-600 w-4"></i>
+                    Anyonic quasiparticles
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Highlights -->
+          <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                <i class="fas fa-infinity text-teal-600 text-xl"></i>
+              </div>
+              <h3 class="font-tiempos text-xl font-semibold mb-3">Invariance</h3>
+              <p class="text-gray-600">Properties remain unchanged under continuous Hamiltonian deformations, provided the energy gap stays open.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <i class="fas fa-shield-alt text-amber-600 text-xl"></i>
+              </div>
+              <h3 class="font-tiempos text-xl font-semibold mb-3">Robustness</h3>
+              <p class="text-gray-600">Protected against local perturbations and disorder, making them ideal for quantum technologies.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                <i class="fas fa-atom text-teal-600 text-xl"></i>
+              </div>
+              <h3 class="font-tiempos text-xl font-semibold mb-3">Quantization</h3>
+              <p class="text-gray-600">Physical responses are quantized with extreme precision, linked to topological invariants like Chern numbers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Defining Topological Phases -->
+      <section id="defining" class="px-8 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Defining Topological Phases of Matter</h2>
+
+          <div class="prose prose-lg max-w-none">
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              Topological phases of matter represent a paradigm shift in our understanding of condensed matter systems,
+              moving beyond the traditional <a href="https://boulderschool.yale.edu/sites/default/files/files/pt_article_published.pdf" class="citation-link">Landau theory of phase transitions</a>
+              which relies on the concept of spontaneous symmetry breaking and local order parameters.
+            </p>
+
+            <div class="highlight-box">
+              <h3 class="font-tiempos text-xl font-semibold text-gray-900 mb-3">Fundamental Concept</h3>
+              <p>
+                These novel phases are characterized by <strong>global, non-local properties that remain invariant under continuous deformations
+                  of the system&#39;s Hamiltonian, provided the energy gap remains open</strong>
+                <a href="https://arxiv.org/abs/1610.03911" class="citation-link">[1]</a>,
+                <a href="https://ncatlab.org/nlab/show/topological+phase+of+matter" class="citation-link">[34]</a>.
+                This inherent robustness stems from the underlying topological nature of the quantum wavefunctions describing these states.
+              </p>
+            </div>
+
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mt-12 mb-6">Topological Invariants</h3>
+            <p>
+              <strong>Topological invariants are mathematical quantities, typically integers or discrete values like ℤ₂ (0 or 1),
+                that characterize and classify different topological phases of matter</strong>
+              <a href="https://boulderschool.yale.edu/sites/default/files/files/Boulder%20lecture%201%20handout.pdf" class="citation-link">[2]</a>,
+              <a href="https://oxfordqcmt.org/topology/" class="citation-link">[35]</a>.
+              A prime example is the <strong>Chern number</strong>, an integer that quantifies the Hall conductance in integer quantum Hall systems
+              <a href="https://www.intechopen.com/chapters/1193904" class="citation-link">[4]</a>,
+              <a href="https://www.physics.upenn.edu/~kane/pubs/chap1.pdf" class="citation-link">[12]</a>.
+            </p>
+
+            <div class="quote-large">
+              &#34;The Chern number directly predicts the quantized value of the Hall conductivity (σ<sub>xy</sub> = (e²/h) * Chern number)&#34;
+            </div>
+
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mt-12 mb-6">Distinction from Conventional Phases</h3>
+            <p>
+              Topological phases are <strong>fundamentally distinct from conventional phases described by Landau&#39;s theory</strong>
+              <a href="https://arpes.stanford.edu/research/quantum-materials/topological-materials" class="citation-link">[11]</a>,
+              <a href="https://ncatlab.org/nlab/show/topological+phase+of+matter" class="citation-link">[34]</a>.
+              While Landau theory characterizes phases based on <strong>spontaneous symmetry breaking</strong> and local order parameters,
+              <strong>topological phases do not necessarily break any symmetries and are not characterized by local order parameters</strong>
+              <a href="https://www.intechopen.com/chapters/1193904" class="citation-link">[4]</a>,
+              <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2024/05/Intro-to-Topo-1.pdf" class="citation-link">[37]</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Key Characteristics -->
+      <section id="characteristics" class="px-8 py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Key Characteristics of Topological Phases</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                <i class="fas fa-shield-alt text-teal-600"></i>
+              </div>
+              <h3 class="font-tiempos text-lg font-semibold mb-3">Robustness</h3>
+              <p class="text-sm text-gray-600">Remarkable stability against local perturbations and disorder, persisting even in imperfect samples.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <i class="fas fa-ruler text-amber-600"></i>
+              </div>
+              <h3 class="font-tiempos text-lg font-semibold mb-3">Quantization</h3>
+              <p class="text-sm text-gray-600">Physical responses quantized with extreme precision, linked to topological invariants.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                <i class="fas fa-border-style text-teal-600"></i>
+              </div>
+              <h3 class="font-tiempos text-lg font-semibold mb-3">Edge States</h3>
+              <p class="text-sm text-gray-600">Protected conducting states at boundaries, robust against scattering and defects.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-lg">
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Bulk-Boundary Correspondence</h3>
+            <p class="text-gray-700 mb-6">
+              A hallmark of many topological phases is the <strong>existence of protected edge or surface states</strong>
+              <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2021/06/intro_to_topo-5-1.pdf" class="citation-link">[3]</a>,
+              <a href="https://spectrum.ieee.org/a-beginners-guide-to-topological-materials" class="citation-link">[7]</a>.
+              These are electronic states localized at the boundaries of a material, while the bulk remains insulating.
+            </p>
+
+            <div class="highlight-box">
+              <p>
+                The protection arises from the <strong>non-trivial topology of the bulk electronic bands, a principle known as the bulk-boundary correspondence</strong>
+                <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2021/06/intro_to_topo-5-1.pdf" class="citation-link">[3]</a>,
+                <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2024/05/Intro-to-Topo-1.pdf" class="citation-link">[107]</a>.
+                This principle dictates that if the bulk has a non-zero topological invariant, then there must be gapless states at its boundary.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Classification -->
+      <section id="classification" class="px-8 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Classification of Topological Phases</h2>
+
+          <p class="text-xl text-gray-700 leading-relaxed mb-8">
+            The classification distinguishes phases based on whether they possess <strong>intrinsic topological order</strong>
+            or are <strong>symmetry-protected topological (SPT) phases</strong>
+            <a href="https://arxiv.org/abs/1610.03911" class="citation-link">[1]</a>,
+            <a href="https://ncatlab.org/nlab/show/topological+order" class="citation-link">[15]</a>.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <h3 class="font-tiempos text-xl font-semibold text-gray-900 mb-4">Intrinsic Topological Order</h3>
+              <p class="text-gray-700 mb-4">
+                A more robust form of order existing in gapped systems without requiring any specific symmetry.
+                Characterized by topological ground state degeneracy and anyonic quasiparticle excitations.
+              </p>
+              <div class="bg-teal-50 rounded-lg p-4">
+                <h4 class="font-medium text-teal-900 mb-2">Example: Fractional Quantum Hall Effect</h4>
+                <p class="text-sm text-teal-800">
+                  Hall conductance quantized to fractional multiples of e²/h, hosting anyons with fractional charge and statistics
+                  <a href="https://www.intechopen.com/chapters/1193904" class="citation-link">[4]</a>,
+                  <a href="https://www.damtp.cam.ac.uk/user/tong/qhe/three.pdf" class="citation-link">[25]</a>.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <h3 class="font-tiempos text-xl font-semibold text-gray-900 mb-4">SPT Phases</h3>
+              <p class="text-gray-700 mb-4">
+                Gapped phases that are trivial in the bulk if symmetries are ignored, but become non-trivial
+                and exhibit protected boundary states in the presence of certain global symmetries.
+              </p>
+              <div class="bg-amber-50 rounded-lg p-4">
+                <h4 class="font-medium text-amber-900 mb-2">Example: Topological Insulators</h4>
+                <p class="text-sm text-amber-800">
+                  Protected by time-reversal symmetry (T² = -1), characterized by Z2 invariants and robust surface states
+                  <a href="https://spectrum.ieee.org/a-beginners-guide-to-topological-materials" class="citation-link">[7]</a>,
+                  <a href="https://arpes.stanford.edu/research/quantum-materials/topological-materials" class="citation-link">[11]</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-lg">
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Altland-Zirnbauer Classification</h3>
+            <p class="text-gray-700 mb-6">
+              The <strong>Altland-Zirnbauer classification</strong> (often called the &#34;ten-fold way&#34; or &#34;periodic table&#34;)
+              categorizes non-interacting fermionic systems based on three fundamental symmetries:
+              <strong>time-reversal, particle-hole, and chiral symmetry</strong>
+              <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2021/06/intro_to_topo-5-1.pdf" class="citation-link">[3]</a>,
+              <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2024/05/Intro-to-Topo-1.pdf" class="citation-link">[107]</a>.
+            </p>
+
+            <div class="mermaid-container">
+              <div class="mermaid-controls">
+                <button class="mermaid-control-btn zoom-in" title="放大">
+                  <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="mermaid-control-btn zoom-out" title="缩小">
+                  <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="mermaid-control-btn reset-zoom" title="重置">
+                  <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button class="mermaid-control-btn fullscreen" title="全屏查看">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+              <div class="mermaid" id="mermaid-1">
+                graph TB
+                A[&#34;Topological Phases&#34;] --&gt; B[&#34;Intrinsic Topological Order&#34;]
+                A --&gt; C[&#34;Symmetry-Protected Topological Phases&#34;]
+
+                B --&gt; D[&#34;Fractional Quantum Hall Effect&#34;]
+                B --&gt; E[&#34;Toric Code&#34;]
+
+                C --&gt; F[&#34;Class A - No Symmetry&#34;]
+                C --&gt; G[&#34;Class AII - Time-Reversal T²=-1&#34;]
+                C --&gt; H[&#34;Class D - Particle-Hole&#34;]
+
+                G --&gt; I[&#34;2D &amp; 3D Topological Insulators&#34;]
+                H --&gt; J[&#34;Topological Superconductors&#34;]
+
+                style A fill:#0f766e,stroke:#134e4a,stroke-width:3px,color:#fff
+                style B fill:#f59e0b,stroke:#d97706,stroke-width:3px,color:#fff
+                style C fill:#10b981,stroke:#059669,stroke-width:3px,color:#fff
+                style I fill:#3b82f6,stroke:#1d4ed8,stroke-width:3px,color:#fff
+                style J fill:#8b5cf6,stroke:#7c3aed,stroke-width:3px,color:#fff
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Prominent Examples -->
+      <section id="examples" class="px-8 py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Prominent Examples</h2>
+
+          <div class="space-y-12">
+            <!-- IQHE -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="flex items-start gap-6">
+                <div class="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-magnet text-teal-600 text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-4">Integer Quantum Hall Effect (IQHE)</h3>
+                  <p class="text-gray-700 mb-4">
+                    The <strong>Integer Quantum Hall Effect stands as a landmark discovery, providing the first experimentally realized example of a topological phase</strong>
+                    <a href="https://www.intechopen.com/chapters/1193904" class="citation-link">[4]</a>,
+                    <a href="https://www.numberanalytics.com/blog/quantum-hall-effect-topological-invariants" class="citation-link">[84]</a>.
+                    Characterized by the <strong>quantization of the Hall conductance σ<sub>xy</sub> into precise integer multiples of e²/h</strong>.
+                  </p>
+                  <div class="highlight-box">
+                    <p class="mb-2"><strong>Key Feature:</strong> Direct link between measurable quantity and topological invariant</p>
+                    <p class="text-sm">The Hall conductance is given by: σ<sub>xy</sub> = (e²/h) * Σ<sub>ν</sub> C<sub>ν</sub>, where C<sub>ν</sub> is the Chern number</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Topological Insulators -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="flex items-start gap-6">
+                <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-layer-group text-amber-600 text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-4">Topological Insulators (2D and 3D)</h3>
+                  <p class="text-gray-700 mb-4">
+                    <strong>Topological Insulators are materials that are electrical insulators in their interior but possess conducting states on their boundaries</strong>
+                    <a href="https://spectrum.ieee.org/a-beginners-guide-to-topological-materials" class="citation-link">[7]</a>,
+                    <a href="https://en.wikipedia.org/wiki/Topological_insulator" class="citation-link">[8]</a>.
+                  </p>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-teal-50 rounded-lg p-4">
+                      <h4 class="font-medium text-teal-900 mb-2">2D Topological Insulators</h4>
+                      <p class="text-sm text-teal-800">
+                        Also known as quantum spin Hall insulators. Exhibit <strong>helical edge states</strong> where electrons with opposite spin propagate in opposite directions
+                        <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2021/06/intro_to_topo-5-1.pdf" class="citation-link">[3]</a>,
+                        <a href="https://arxiv.org/html/2411.11701v1" class="citation-link">[173]</a>.
+                      </p>
+                    </div>
+
+                    <div class="bg-amber-50 rounded-lg p-4">
+                      <h4 class="font-medium text-amber-900 mb-2">3D Topological Insulators</h4>
+                      <p class="text-sm text-amber-800">
+                        Surface states form a <strong>2D Dirac cone</strong> with spin-momentum locking. Materials include Bi<sub>2</sub>Se<sub>3</sub>, Bi<sub>2</sub>Te<sub>3</sub>
+                        <a href="https://arpes.stanford.edu/research/quantum-materials/topological-materials" class="citation-link">[11]</a>,
+                        <a href="https://arxiv.org/pdf/1405.2036" class="citation-link">[187]</a>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FQHE -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="flex items-start gap-6">
+                <div class="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-fraction text-teal-600 text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-4">Fractional Quantum Hall Effect (FQHE)</h3>
+                  <p class="text-gray-700 mb-4">
+                    The <strong>FQHE is a highly correlated quantum phenomenon where the Hall conductance is quantized to fractional multiples of e²/h</strong>
+                    <a href="https://www.intechopen.com/chapters/1193904" class="citation-link">[4]</a>,
+                    <a href="https://www.damtp.cam.ac.uk/user/tong/qhe/three.pdf" class="citation-link">[25]</a>.
+                    Unlike IQHE, FQHE arises from <strong>strong electron-electron interactions</strong> within partially filled Landau levels.
+                  </p>
+
+                  <div class="highlight-box">
+                    <h4 class="font-medium text-gray-900 mb-2">Anyonic Excitations</h4>
+                    <p>
+                      FQH states host exotic quasiparticles called <strong>anyons</strong> that are neither bosons nor fermions.
+                      Their wavefunction acquires a complex phase e<sup>iπα</sup> upon exchange, where α is not necessarily an integer.
+                      Some anyons carry <strong>fractional electric charge</strong> (e.g., e/3)
+                      <a href="https://www.damtp.cam.ac.uk/user/tong/qhe/three.pdf" class="citation-link">[25]</a>,
+                      <a href="https://topocondmat.org/w12_manybody/fqhe.html" class="citation-link">[26]</a>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Experimental Signatures -->
+      <section id="experimental" class="px-8 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Experimental Signatures and Realizations</h2>
+
+          <p class="text-xl text-gray-700 leading-relaxed mb-8">
+            Theoretical predictions of topological phases have been confirmed through numerous experiments,
+            primarily through the observation of distinct physical signatures that validate their topological nature.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <h3 class="font-tiempos text-lg font-semibold text-gray-900 mb-4">IQHE Signatures</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Quantized Hall resistance</strong>: R<sub>xy</sub> = h/νe² with ν integer</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Vanishing longitudinal resistance</strong>: R<sub>xx</sub> ≈ 0</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span>Robust against disorder and temperature</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <h3 class="font-tiempos text-lg font-semibold text-gray-900 mb-4">3D TI Signatures</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-amber-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Dirac cone surface states</strong> visualized by ARPES</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-amber-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Spin-momentum locking</strong> confirmed by spin-resolved ARPES</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-amber-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span>Linear dispersion E ≈ v<sub>F</sub>|k|</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <h3 class="font-tiempos text-lg font-semibold text-gray-900 mb-4">2D TI Signatures</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Quantized conductance</strong>: G = 2e²/h for two edges</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Helical edge states</strong> with opposite spin propagation</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-check text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span>Suppressed backscattering</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-lg">
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">ARPES Visualization</h3>
+            <p class="text-gray-700 mb-6">
+              <strong>Angle-Resolved Photoemission Spectroscopy (ARPES) is a powerful experimental technique used to directly visualize Dirac cone surface states</strong>
+              <a href="https://arpes.stanford.edu/research/quantum-materials/topological-materials" class="citation-link">[11]</a>,
+              <a href="https://arxiv.org/pdf/1405.2036" class="citation-link">[187]</a>.
+              Measurements on materials like Bi<sub>2</sub>Se<sub>3</sub> have clearly revealed the characteristic Dirac cones,
+              providing strong evidence for their topological nature.
+            </p>
+
+            <img src="https://kimi-web-img.moonshot.cn/img/i0.wp.com/fbf15feafb1f8e175816a5f53419991e316e88b6.jpg" alt="Dirac cone electronic structure measured by ARPES" class="w-full max-w-2xl mx-auto rounded-lg shadow-md" size="medium" aspect="wide" query="Dirac cone ARPES" referrerpolicy="no-referrer" data-modified="1" data-score="11594.00"/>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Theoretical Frameworks -->
+      <section id="theoretical" class="px-8 py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Theoretical Frameworks and Tools</h2>
+
+          <div class="space-y-12">
+            <!-- Topological Band Theory -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Topological Band Theory</h3>
+              <p class="text-gray-700 mb-6">
+                <strong>Topological band theory extends conventional band theory to classify electronic states based on their topological properties</strong>
+                <a href="https://boulderschool.yale.edu/sites/default/files/files/Boulder%20lecture%201%20handout.pdf" class="citation-link">[2]</a>,
+                <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2021/06/intro_to_topo-5-1.pdf" class="citation-link">[3]</a>.
+                The central idea is to assign a <strong>topological invariant to each isolated band or group of bands</strong>,
+                characterizing the global structure of Bloch wavefunctions across the Brillouin zone.
+              </p>
+
+              <div class="mermaid-container">
+                <div class="mermaid-controls">
+                  <button class="mermaid-control-btn zoom-in" title="放大">
+                    <i class="fas fa-search-plus"></i>
+                  </button>
+                  <button class="mermaid-control-btn zoom-out" title="缩小">
+                    <i class="fas fa-search-minus"></i>
+                  </button>
+                  <button class="mermaid-control-btn reset-zoom" title="重置">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                  </button>
+                  <button class="mermaid-control-btn fullscreen" title="全屏查看">
+                    <i class="fas fa-expand"></i>
+                  </button>
+                </div>
+                <div class="mermaid" id="mermaid-2">
+                  graph LR
+                  A[&#34;Conventional Band Theory&#34;] --&gt; B[&#34;Energy Bands&#34;]
+                  B --&gt; C[&#34;Gap Classification&#34;]
+                  C --&gt; D[&#34;Insulator/Metal&#34;]
+
+                  A --&gt; E[&#34;Topological Band Theory&#34;]
+                  E --&gt; F[&#34;Topological Invariants&#34;]
+                  F --&gt; G[&#34;Chern Number&#34;]
+                  F --&gt; H[&#34;Z2 Invariant&#34;]
+                  F --&gt; I[&#34;Winding Number&#34;]
+
+                  G --&gt; J[&#34;Quantum Hall Effect&#34;]
+                  H --&gt; K[&#34;Topological Insulators&#34;]
+                  I --&gt; L[&#34;SSH Model&#34;]
+
+                  style A fill:#f8fafc,stroke:#374151,stroke-width:2px
+                  style E fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+                  style J fill:#ecfdf5,stroke:#10b981,stroke-width:2px
+                  style K fill:#eff6ff,stroke:#3b82f6,stroke-width:2px
+                  style L fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px
+                </div>
+              </div>
+            </div>
+
+            <!-- Berry Phase -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Berry Phase and Berry Curvature</h3>
+              <p class="text-gray-700 mb-6">
+                The <strong>Berry phase and Berry curvature are fundamental concepts in understanding topological properties</strong>
+                <a href="https://phas.ubc.ca/~berciu/TEACHING/PHYS502/PROJECTS/21-Christian.pdf" class="citation-link">[70]</a>,
+                <a href="https://chiralmodes.sciencesconf.org/data/pages/PascalSimon.pdf" class="citation-link">[103]</a>.
+                The Berry phase describes the phase acquired by a quantum state as it is adiabatically transported around a closed loop in parameter space.
+              </p>
+
+              <div class="bg-teal-50 rounded-lg p-6">
+                <h4 class="font-medium text-teal-900 mb-3">Mathematical Foundation</h4>
+                <div class="font-mono text-sm space-y-2">
+                  <div class="text-teal-800">Berry connection: <strong>A</strong><sub>n</sub>(<strong>k</strong>) = -i⟨u<sub>n<strong>k</strong></sub>|∇<sub><strong>k</strong></sub>|u<sub>n<strong>k</strong></sub>⟩</div>
+                  <div class="text-teal-800">Berry curvature: <strong>Ω</strong><sub>n</sub>(<strong>k</strong>) = ∇<sub><strong>k</strong></sub> × <strong>A</strong><sub>n</sub>(<strong>k</strong>)</div>
+                  <div class="text-teal-800">Chern number: C<sub>n</sub> = (1/2π) ∫<sub>BZ</sub> Ω<sub>n,z</sub>(<strong>k</strong>) d²k</div>
+                </div>
+              </div>
+
+              <p class="text-gray-700 mt-6">
+                A crucial result is that the <strong>integral of the Berry curvature over the 2D Brillouin zone is quantized to 2π times an integer</strong>.
+                This integer is the <strong>first Chern number</strong>, a topological invariant that directly determines the quantized Hall conductivity
+                <a href="https://www.numberanalytics.com/blog/quantum-hall-effect-topological-invariants" class="citation-link">[84]</a>,
+                <a href="https://chiralmodes.sciencesconf.org/data/pages/PascalSimon.pdf" class="citation-link">[103]</a>.
+              </p>
+            </div>
+
+            <!-- Chern-Simons Theory -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Chern-Simons Theory and Effective Field Theories</h3>
+              <p class="text-gray-700 mb-6">
+                For strongly interacting topological phases like FQHE, <strong>Chern-Simons theories provide a powerful framework</strong>
+                <a href="https://www.damtp.cam.ac.uk/user/tong/qhe/three.pdf" class="citation-link">[25]</a>.
+                These topological quantum field theories capture universal properties including:
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-amber-50 rounded-lg p-4">
+                  <h4 class="font-medium text-amber-900 mb-2">Ground State Degeneracy</h4>
+                  <p class="text-sm text-amber-800">Topology-dependent degeneracy on higher-genus manifolds</p>
+                </div>
+                <div class="bg-teal-50 rounded-lg p-4">
+                  <h4 class="font-medium text-teal-900 mb-2">Anyonic Statistics</h4>
+                  <p class="text-sm text-teal-800">Quasiparticle braiding and exchange properties</p>
+                </div>
+                <div class="bg-amber-50 rounded-lg p-4">
+                  <h4 class="font-medium text-amber-900 mb-2">Edge State Dynamics</h4>
+                  <p class="text-sm text-amber-800">Chiral edge modes and their propagation</p>
+                </div>
+              </div>
+
+              <div class="highlight-box mt-6">
+                <p>
+                  The coefficients in Chern-Simons actions, often called &#34;K-matrices,&#34; encode crucial information about
+                  <strong>filling fraction, types of anyonic excitations, and their braiding statistics</strong>.
+                  These theories are universal and independent of microscopic details.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Future Implications -->
+      <section id="implications" class="px-8 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="font-tiempos text-4xl font-semibold text-gray-900 mb-8">Implications and Future Directions</h2>
+
+          <p class="text-xl text-gray-700 leading-relaxed mb-8">
+            The discovery of topological phases has profound implications for fundamental physics and holds significant promise
+            for future technological advancements, particularly in quantum technologies and materials science.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mb-6">
+                <i class="fas fa-quantum text-teal-600 text-2xl"></i>
+              </div>
+              <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-4">Quantum Computing</h3>
+              <p class="text-gray-700 mb-4">
+                <strong>Non-Abelian anyons are sought after for topological quantum computation</strong>
+                <a href="https://ethz.ch/content/dam/ethz/special-interest/phys/theoretical-physics/cmtm-dam/documents/tqn/tqn-2021/TopCondMat.pdf" class="citation-link">[115]</a>,
+                <a href="https://science-en.sustech.edu.cn/news/detail/1583.html" class="citation-link">[126]</a>.
+                Quantum information encoded in topological degrees of freedom is intrinsically protected against local noise.
+              </p>
+              <div class="bg-teal-50 rounded-lg p-4">
+                <h4 class="font-medium text-teal-900 mb-2">Majorana Zero Modes</h4>
+                <p class="text-sm text-teal-800">Predicted in topological superconductors, offering potential for fault-tolerant quantum computation through braiding operations</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+              <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
+                <i class="fas fa-spin text-amber-600 text-2xl"></i>
+              </div>
+              <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-4">Spintronics</h3>
+              <p class="text-gray-700 mb-4">
+                <strong>Topological insulators offer unique advantages for spintronics</strong>
+                <a href="https://www.numberanalytics.com/blog/ultimate-guide-topological-phases-condensed-matter-physics" class="citation-link">[110]</a>.
+                The spin-momentum locked surface states can carry spin currents with high efficiency and are robust against backscattering.
+              </p>
+              <div class="bg-amber-50 rounded-lg p-4">
+                <h4 class="font-medium text-amber-900 mb-2">Low-Power Devices</h4>
+                <p class="text-sm text-amber-800">Dissipationless spin transport could enable next-generation low-power electronic devices</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-lg mb-12">
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Search for New Topological Materials</h3>
+            <p class="text-gray-700 mb-6">
+              A worldwide effort is underway to discover new topological materials, guided by theoretical predictions and first-principles calculations.
+              The search encompasses various material classes and engineered systems:
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Heavy Elements</h4>
+                <p class="text-sm text-gray-600">Bi, Sb, Te, Se-based compounds with strong spin-orbit coupling</p>
+              </div>
+              <div class="border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Artificial Systems</h4>
+                <p class="text-sm text-gray-600">Photonic crystals, cold atoms, and acoustic metamaterials</p>
+              </div>
+              <div class="border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Heterostructures</h4>
+                <p class="text-sm text-gray-600">Layered materials offering tunable topological properties</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-r from-teal-50 to-amber-50 rounded-xl p-8">
+            <h3 class="font-tiempos text-2xl font-semibold text-gray-900 mb-6">Strongly Correlated Systems</h3>
+            <p class="text-gray-700 mb-6">
+              A growing frontier involves <strong>understanding topological phases in strongly correlated electron systems</strong>,
+              where electron-electron interactions lead to emergent phenomena beyond non-interacting band theory.
+            </p>
+
+            <div class="bg-white rounded-lg p-6">
+              <h4 class="font-medium text-gray-900 mb-3">Research Directions</h4>
+              <ul class="space-y-2 text-sm text-gray-700">
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-arrow-right text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Topological Mott insulators</strong> - Correlation-driven topological phases</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-arrow-right text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Fractional Chern insulators</strong> - FQHE analogs without magnetic fields</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fas fa-arrow-right text-teal-600 w-4 mt-1 flex-shrink-0"></i>
+                  <span><strong>Unconventional topological superconductors</strong> - Exotic pairing symmetries</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="quote-large mt-6">
+              &#34;The interplay between topology and strong correlations is expected to be a fertile ground for discovering new fundamental physics&#34;
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="bg-gray-900 text-white px-8 py-12">
+        <div class="max-w-4xl mx-auto text-center">
+          <p class="text-gray-400 mb-4">
+            The exploration of topological phases continues to revolutionize our understanding of quantum matter,
+            offering new paradigms for classifying phases and unprecedented opportunities for technological advancement.
+          </p>
+          <p class="text-sm text-gray-500">
+            This overview is based on current theoretical and experimental understanding of topological phases of matter.
+          </p>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+        // Initialize Mermaid with custom theme
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                // Primary colors with high contrast
+                primaryColor: '#0f766e',
+                primaryTextColor: '#ffffff',
+                primaryBorderColor: '#134e4a',
+                
+                // Secondary colors
+                secondaryColor: '#f59e0b',
+                secondaryTextColor: '#ffffff',
+                secondaryBorderColor: '#d97706',
+                
+                // Tertiary colors
+                tertiaryColor: '#10b981',
+                tertiaryTextColor: '#ffffff',
+                tertiaryBorderColor: '#059669',
+                
+                // Additional colors for variety
+                primaryColorLight: '#14b8a6',
+                primaryColorDark: '#0d5b56',
+                secondaryColorLight: '#fbbf24',
+                secondaryColorDark: '#b45309',
+                
+                // Background and lines
+                background: '#ffffff',
+                mainBkg: '#ffffff',
+                secondBkg: '#f8fafc',
+                tertiaryBkg: '#e2e8f0',
+                lineColor: '#374151',
+                
+                // Text colors for better contrast
+                textColor: '#374151',
+                darkTextColor: '#1f2937',
+                
+                // Node specific colors with high contrast
+                nodeBkg: '#ffffff',
+                nodeTextColor: '#374151',
+                nodeBorder: '#374151',
+                
+                // Specific class colors
+                cScale0: '#0f766e',
+                cScale1: '#f59e0b', 
+                cScale2: '#10b981',
+                cScale3: '#3b82f6',
+                cScale4: '#8b5cf6',
+                cScale5: '#ef4444',
+                cScale6: '#06b6d4',
+                cScale7: '#84cc16',
+                
+                // Ensure text is readable on all scales
+                cScaleLabel0: '#ffffff',
+                cScaleLabel1: '#ffffff',
+                cScaleLabel2: '#ffffff',
+                cScaleLabel3: '#ffffff',
+                cScaleLabel4: '#ffffff',
+                cScaleLabel5: '#ffffff',
+                cScaleLabel6: '#ffffff',
+                cScaleLabel7: '#ffffff'
+            },
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 20
+            },
+            sequence: {
+                useMaxWidth: false,
+                wrap: true
+            },
+            gantt: {
+                useMaxWidth: false
+            }
+        });
+
+        // Initialize Mermaid Controls for zoom and pan
+        function initializeMermaidControls() {
+            const containers = document.querySelectorAll('.mermaid-container');
+
+            containers.forEach(container => {
+            const mermaidElement = container.querySelector('.mermaid');
+            let scale = 1;
+            let isDragging = false;
+            let startX, startY, translateX = 0, translateY = 0;
+
+            // 触摸相关状态
+            let isTouch = false;
+            let touchStartTime = 0;
+            let initialDistance = 0;
+            let initialScale = 1;
+            let isPinching = false;
+
+            // Zoom controls
+            const zoomInBtn = container.querySelector('.zoom-in');
+            const zoomOutBtn = container.querySelector('.zoom-out');
+            const resetBtn = container.querySelector('.reset-zoom');
+            const fullscreenBtn = container.querySelector('.fullscreen');
+
+            function updateTransform() {
+                mermaidElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+                if (scale > 1) {
+                container.classList.add('zoomed');
+                } else {
+                container.classList.remove('zoomed');
+                }
+
+                mermaidElement.style.cursor = isDragging ? 'grabbing' : 'grab';
+            }
+
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', () => {
+                scale = Math.min(scale * 1.25, 4);
+                updateTransform();
+                });
+            }
+
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', () => {
+                scale = Math.max(scale / 1.25, 0.3);
+                if (scale <= 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+                updateTransform();
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                updateTransform();
+                });
+            }
+
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', () => {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+                });
+            }
+
+            // Mouse Events
+            mermaidElement.addEventListener('mousedown', (e) => {
+                if (isTouch) return; // 如果是触摸设备，忽略鼠标事件
+
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                mermaidElement.style.cursor = 'grabbing';
+                updateTransform();
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && !isTouch) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging && !isTouch) {
+                isDragging = false;
+                mermaidElement.style.cursor = 'grab';
+                updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                if (isDragging && !isTouch) {
+                isDragging = false;
+                mermaidElement.style.cursor = 'grab';
+                updateTransform();
+                }
+            });
+
+            // 获取两点之间的距离
+            function getTouchDistance(touch1, touch2) {
+                return Math.hypot(
+                touch2.clientX - touch1.clientX,
+                touch2.clientY - touch1.clientY
+                );
+            }
+
+            // Touch Events - 触摸事件处理
+            mermaidElement.addEventListener('touchstart', (e) => {
+                isTouch = true;
+                touchStartTime = Date.now();
+
+                if (e.touches.length === 1) {
+                // 单指拖动
+                isPinching = false;
+                isDragging = true;
+
+                const touch = e.touches[0];
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+
+                } else if (e.touches.length === 2) {
+                // 双指缩放
+                isPinching = true;
+                isDragging = false;
+
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialDistance = getTouchDistance(touch1, touch2);
+                initialScale = scale;
+                }
+
+                e.preventDefault();
+            }, { passive: false });
+
+            mermaidElement.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging && !isPinching) {
+                // 单指拖动
+                const touch = e.touches[0];
+                translateX = touch.clientX - startX;
+                translateY = touch.clientY - startY;
+                updateTransform();
+
+                } else if (e.touches.length === 2 && isPinching) {
+                // 双指缩放
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentDistance = getTouchDistance(touch1, touch2);
+
+                if (initialDistance > 0) {
+                    const newScale = Math.min(Math.max(
+                    initialScale * (currentDistance / initialDistance),
+                    0.3
+                    ), 4);
+                    scale = newScale;
+                    updateTransform();
+                }
+                }
+
+                e.preventDefault();
+            }, { passive: false });
+
+            mermaidElement.addEventListener('touchend', (e) => {
+                // 重置状态
+                if (e.touches.length === 0) {
+                isDragging = false;
+                isPinching = false;
+                initialDistance = 0;
+
+                // 延迟重置isTouch，避免鼠标事件立即触发
+                setTimeout(() => {
+                    isTouch = false;
+                }, 100);
+                } else if (e.touches.length === 1 && isPinching) {
+                // 从双指变为单指，切换为拖动模式
+                isPinching = false;
+                isDragging = true;
+
+                const touch = e.touches[0];
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+                }
+
+                updateTransform();
+            });
+
+            mermaidElement.addEventListener('touchcancel', (e) => {
+                isDragging = false;
+                isPinching = false;
+                initialDistance = 0;
+
+                setTimeout(() => {
+                isTouch = false;
+                }, 100);
+
+                updateTransform();
+            });
+
+            // Enhanced wheel zoom with better center point handling
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = Math.min(Math.max(scale * delta, 0.3), 4);
+
+                // Adjust translation to zoom towards center
+                if (newScale !== scale) {
+                const scaleDiff = newScale / scale;
+                translateX = translateX * scaleDiff;
+                translateY = translateY * scaleDiff;
+                scale = newScale;
+
+                if (scale <= 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+
+                updateTransform();
+                }
+            });
+
+            // Initialize display
+            updateTransform();
+            });
+        }
+
+        // Initialize mermaid controls when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMermaidControls();
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in TOC
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('.toc-fixed a[href^="#"]');
+
+        function updateActiveSection() {
+            let current = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('text-teal-700', 'font-medium');
+                link.classList.add('text-gray-600');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.remove('text-gray-600');
+                    link.classList.add('text-teal-700', 'font-medium');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveSection);
+        updateActiveSection(); // Initial call
+    </script>
+  
+
+</body></html>
