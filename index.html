@@ -34,40 +34,45 @@ const owner = 'dhman-computing';
 const repo  = 'kimi-researcher-archive';
 const branch= 'main';
 
-/* === FETCH TREE & BUILD === */
-fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`)
-  .then(r => r.json())
-  .then(data => {
-    const html = data.tree.filter(f => f.path.endsWith('.html') && f.path !== 'index.html');
-    const cards = document.getElementById('cards');
-    if (!html.length) { cards.innerHTML='<p>No pages yet. Commit an <code>*.html</code> file to see it listed.</p>'; return; }
+/* === HELPER: fetch title from HTML === */
+async function fetchTitle(url) {
+  try {
+    const txt = await fetch(url).then(r => r.text());
+    return txt.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] || url.split('/').pop().replace(/\.html$/,'');
+  } catch { return url.split('/').pop().replace(/\.html$/,''); }
+}
 
-    /* Build category map: folder → pages[] */
-    const cats = {};
-    html.forEach(f=>{
-      const parts = f.path.split('/');
-      const fileName = parts.pop().replace(/\.html$/,'').replace(/_/g,' ');
-      const cat = parts.length ? parts.join(' / ') : 'Uncategorised';
-      (cats[cat]=cats[cat]||[]).push({name:fileName, url:`https://${owner}.github.io/${repo}/${f.path}`});
-    });
+/* === MAIN === */
+(async () => {
+  const data = await (await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`)).json();
+  const html = data.tree.filter(f => f.path.endsWith('.html') && f.path !== 'index.html');
 
-    /* Render */
-    cards.innerHTML='';
-    Object.keys(cats).sort().forEach(cat=>{
-      const section=document.createElement('section');
-      section.className='cat';
-      section.innerHTML=`<h2>${cat}</h2><div class="grid"></div>`;
-      const grid=section.querySelector('.grid');
-      cats[cat].forEach(p=>{
-        const card=document.createElement('div');
-        card.className='card';
-        card.innerHTML=`<strong>${p.name}</strong><br><a href="${p.url}">Open →</a>`;
-        grid.appendChild(card);
-      });
-      cards.appendChild(section);
+  const cards = document.getElementById('cards');
+  if (!html.length) { cards.innerHTML='<p>No pages yet.</p>'; return; }
+
+  const cats = {};
+  for (const f of html) {
+    const parts = f.path.split('/');
+    const file  = parts.pop();
+    const cat   = parts.length ? parts.join(' / ') : 'Uncategorised';
+    const pageUrl = `https://${owner}.github.io/${repo}/${f.path}`;
+    const title = await fetchTitle(pageUrl);
+    (cats[cat]=cats[cat]||[]).push({title, url:pageUrl});
+  }
+
+  cards.innerHTML='';
+  Object.keys(cats).sort().forEach(cat=>{
+    const sec=document.createElement('section'); sec.className='cat';
+    sec.innerHTML=`<h2>${cat}</h2><div class="grid"></div>`;
+    const grid=sec.querySelector('.grid');
+    cats[cat].forEach(p=>{
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<strong>${p.title}</strong><br><a href="${p.url}">Open →</a>`;
+      grid.appendChild(card);
     });
-  })
-  .catch(err=>{document.getElementById('cards').innerHTML='<p>Could not load file list.</p>'});
+    cards.appendChild(sec);
+  });
+})();
 </script>
 </body>
 </html>
