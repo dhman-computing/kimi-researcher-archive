@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Hamiltonian Explorer</title>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive educational tool, moving from concept to practice. It uses a clear, tab-based navigation ('Concepts', 'The Transform', 'Interactive Example') to guide the user. This structure breaks down the dense report into logical, digestible sections. It starts with the 'why' (Concepts), explains the 'how' (The Transform) with interactive formula breakdowns, and culminates in a hands-on 'what-if' visualization (Interactive Example). This is more user-friendly than a linear scroll, as it allows users to focus on one aspect at a time and directly connects abstract theory to a tangible, visual outcome. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Real vs. Momentum Space. Goal: Compare. Viz: Side-by-side HTML/CSS diagram. Interaction: N/A, static comparison. Justification: A simple visual contrast is most effective for this core concept. Library: Tailwind CSS.
+        - Report Info: Kinetic & Potential Energy Transformation. Goal: Organize/Inform. Viz: Clickable cards showing equations. Interaction: User clicks to reveal the transformation for each component. Justification: Breaks the complex math into manageable, user-initiated steps. Library: Vanilla JS.
+        - Report Info: 1D Tight-Binding Model. Goal: Show Change/Relationships. Viz: Line chart for E(k) dispersion. Interaction: Sliders for hopping (t) and on-site energy (ε₀) dynamically update the chart. Justification: This is the core interactive element. It vividly demonstrates how model parameters affect physical properties (the band structure), turning a static equation into an explorable model. Library: Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg-color: #FDFBF8; /* Warm off-white */
+            --text-color: #4A4A4A; /* Dark grey */
+            --primary-color: #A98A75; /* Muted brown/taupe */
+            --accent-color: #5E8B7E; /* Soft teal/green */
+            --border-color: #EAE0D5;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .card {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-color);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--accent-color);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen">
+        <header class="bg-white/80 backdrop-blur-lg border-b border-gray-200/80 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight" style="color: var(--primary-color);">Hamiltonian Explorer</h1>
+                    <nav id="navigation" class="flex space-x-4 sm:space-x-8 text-sm sm:text-base font-medium">
+                        <button class="nav-button active" data-target="concepts">Concepts</button>
+                        <button class="nav-button" data-target="transform">The Transform</button>
+                        <button class="nav-button" data-target="example">Interactive Example</button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            
+            <section id="concepts" class="content-section active">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight" style="color: var(--text-color);">From Real Space to Momentum Space</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">This tool explores a fundamental concept in condensed matter physics: transforming a system's description (its Hamiltonian) from real, physical space to an abstract 'momentum space'. This shift in perspective is key to understanding the collective behavior of particles in periodic structures like crystals.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center"><span class="text-2xl mr-3">📍</span> Real Space View</h3>
+                        <p class="text-gray-600 mb-4">Describes particles by their exact positions (\(\mathbf{r}\)). The potential energy \(V(\mathbf{r})\) varies from point to point. It's intuitive, but solving equations for trillions of interacting particles is impossibly complex.</p>
+                        <div class="w-full p-4 border-2 border-dashed rounded-lg" style="border-color: var(--border-color);">
+                            <p class="text-center font-mono text-sm" style="color: var(--primary-color);">Lattice of atoms</p>
+                            <div class="grid grid-cols-5 gap-4 mt-4">
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                                <span class="w-6 h-6 rounded-full mx-auto" style="background-color: var(--accent-color); opacity: 0.5;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center"><span class="text-2xl mr-3">🌊</span> Momentum Space View</h3>
+                        <p class="text-gray-600 mb-4">Describes particles as waves with specific crystal momenta (\(\mathbf{k}\)). By leveraging the lattice's symmetry using a Fourier Transform, the problem simplifies dramatically. This allows us to calculate properties like the electronic band structure.</p>
+                        <div class="w-full p-4 border-2 border-dashed rounded-lg" style="border-color: var(--border-color);">
+                            <p class="text-center font-mono text-sm" style="color: var(--primary-color);">Brillouin Zone</p>
+                             <div class="relative w-full h-24 mt-4">
+                                <div class="absolute inset-0 border-2 rounded-lg" style="border-color: var(--border-color);"></div>
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                    <p class="font-bold text-lg" style="color: var(--accent-color);">E(k)</p>
+                                    <p class="text-xs">Energy vs. Momentum</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="transform" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight">The Mathematical Bridge: Fourier Transform</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The Hamiltonian, \( \hat{H} = \hat{T} + \hat{V} \), contains a kinetic part (\(\hat{T}\)) and a potential part (\(\hat{V}\)). We transform each component from real space operators acting on \(\psi(\mathbf{r})\) to momentum space operators acting on \(\phi(\mathbf{k})\).</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Kinetic Energy (\(\hat{T}\))</h3>
+                        <div class="grid md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-700">Real Space</h4>
+                                <p class="text-sm text-gray-500 mb-2">A differential operator.</p>
+                                <div class="p-4 rounded-md bg-gray-50">
+                                    $$ \hat{T} = -\frac{\hbar^2}{2m} \nabla^2 $$
+                                </div>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-gray-700">Momentum Space</h4>
+                                <p class="text-sm text-gray-500 mb-2">Becomes a simple multiplication.</p>
+                                <div class="p-4 rounded-md bg-teal-50" style="background-color: #F0F7F5;">
+                                     $$ \hat{T}_{\mathbf{k}} = \frac{\hbar^2 k^2}{2m} $$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Potential Energy (\(\hat{V}\)) for a Periodic Crystal</h3>
+                         <div class="grid md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-700">Real Space</h4>
+                                <p class="text-sm text-gray-500 mb-2">A periodic function.</p>
+                                <div class="p-4 rounded-md bg-gray-50">
+                                    $$ V(\mathbf{r}) = V(\mathbf{r} + \mathbf{R}) = \sum_{\mathbf{G}} V_{\mathbf{G}} e^{i\mathbf{G} \cdot \mathbf{r}} $$
+                                </div>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-gray-700">Momentum Space</h4>
+                                <p class="text-sm text-gray-500 mb-2">Couples states that differ by a reciprocal lattice vector \(\mathbf{G}\).</p>
+                                <div class="p-4 rounded-md bg-teal-50" style="background-color: #F0F7F5;">
+                                     $$ \langle \mathbf{k} | V | \mathbf{k}' \rangle \propto \sum_{\mathbf{G}} V_{\mathbf{G}} \delta_{\mathbf{k}', \mathbf{k} - \mathbf{G}} $$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="example" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight">Interactive Example: 1D Tight-Binding Model</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Let's apply this to a simple model of a 1D chain of atoms. Electrons can "sit" on an atom with energy \(\epsilon_0\) or "hop" to a neighbor with strength \(t\). See how changing these physical parameters affects the energy band structure \(E(k)\) in momentum space.</p>
+                </div>
+                
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 space-y-8">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="font-semibold text-lg mb-4">Model Parameters</h3>
+                            <div class="space-y-6">
+                                <div>
+                                    <label for="hopping" class="block text-sm font-medium text-gray-700">Hopping Integral (\(t\))</label>
+                                    <input id="hopping" type="range" min="0.5" max="3" value="1" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <div class="text-right text-sm font-mono" style="color: var(--primary-color);">t = <span id="hopping-value">1.0</span></div>
+                                </div>
+                                <div>
+                                    <label for="onsite" class="block text-sm font-medium text-gray-700">On-site Energy (\(\epsilon_0\))</label>
+                                    <input id="onsite" type="range" min="-2" max="2" value="0" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <div class="text-right text-sm font-mono" style="color: var(--primary-color);">ε₀ = <span id="onsite-value">0.0</span></div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="card p-4 rounded-lg text-center">
+                            <h4 class="font-semibold text-gray-700 mb-2">Energy Dispersion</h4>
+                            <div class="p-2 rounded-md bg-teal-50" style="background-color: #F0F7F5;">
+                                $$ E(k) = \epsilon_0 - 2t \cos(ka) $$
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 card p-6 rounded-lg">
+                        <div class="chart-container">
+                            <canvas id="bandStructureChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            document.getElementById('navigation').addEventListener('click', (e) => {
+                if (e.target.matches('.nav-button')) {
+                    const targetId = e.target.dataset.target;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
+                }
+            });
+            
+            const hoppingSlider = document.getElementById('hopping');
+            const onsiteSlider = document.getElementById('onsite');
+            const hoppingValueSpan = document.getElementById('hopping-value');
+            const onsiteValueSpan = document.getElementById('onsite-value');
+            
+            const ctx = document.getElementById('bandStructureChart').getContext('2d');
+            let bandChart;
+
+            const kPoints = [];
+            const numPoints = 100;
+            const latticeConstant_a = 1; 
+            for (let i = 0; i <= numPoints; i++) {
+                kPoints.push((-Math.PI / latticeConstant_a) + (i * 2 * Math.PI / (latticeConstant_a * numPoints)));
+            }
+            
+            function calculateEnergy(k, t, epsilon0) {
+                return epsilon0 - 2 * t * Math.cos(k * latticeConstant_a);
+            }
+
+            function updateChart() {
+                const t = parseFloat(hoppingSlider.value);
+                const epsilon0 = parseFloat(onsiteSlider.value);
+
+                hoppingValueSpan.textContent = t.toFixed(1);
+                onsiteValueSpan.textContent = epsilon0.toFixed(1);
+
+                const energyValues = kPoints.map(k => calculateEnergy(k, t, epsilon0));
+                
+                bandChart.data.datasets[0].data = energyValues;
+                bandChart.options.scales.y.min = epsilon0 - 2 * t - 1;
+                bandChart.options.scales.y.max = epsilon0 + 2 * t + 1;
+                bandChart.update();
+            }
+
+            function initChart() {
+                const t = parseFloat(hoppingSlider.value);
+                const epsilon0 = parseFloat(onsiteSlider.value);
+                const initialEnergyValues = kPoints.map(k => calculateEnergy(k, t, epsilon0));
+
+                bandChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: kPoints.map(k => k.toFixed(2)),
+                        datasets: [{
+                            label: 'E(k)',
+                            data: initialEnergyValues,
+                            borderColor: 'var(--accent-color)',
+                            backgroundColor: 'rgba(94, 139, 126, 0.1)',
+                            borderWidth: 2.5,
+                            pointRadius: 0,
+                            tension: 0.1,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Momentum k (from -π/a to +π/a)',
+                                    font: { size: 14 }
+                                },
+                                ticks: {
+                                    maxTicksLimit: 5,
+                                    callback: function(value, index, values) {
+                                       const kVal = kPoints[index];
+                                       if (Math.abs(kVal + Math.PI) < 0.01) return '-π/a';
+                                       if (Math.abs(kVal - Math.PI) < 0.01) return 'π/a';
+                                       if (Math.abs(kVal) < 0.01) return '0';
+                                       return null;
+                                    }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Energy E(k)',
+                                    font: { size: 14 }
+                                },
+                                min: epsilon0 - 2 * t - 1,
+                                max: epsilon0 + 2 * t + 1
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        return 'k ≈ ' + tooltipItems[0].label;
+                                    },
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toFixed(2);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            }
+            
+            initChart();
+            hoppingSlider.addEventListener('input', updateChart);
+            onsiteSlider.addEventListener('input', updateChart);
+            updateChart(); 
+        });
+    </script>
+</body>
+</html>
