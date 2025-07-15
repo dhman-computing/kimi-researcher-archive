@@ -1,0 +1,791 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Topological Aspects of the SSH Model</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Crimson Text', 'serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1e3a8a',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4',
+                        neutral: '#374151',
+                        'base-100': '#ffffff',
+                        'base-200': '#f8fafc',
+                        'base-300': '#e2e8f0',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .toc-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-right: 1px solid #cbd5e1;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #8b5cf6 50%, #06b6d4 100%);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 2rem;
+            height: 70vh;
+        }
+        .bento-main {
+            grid-row: 1 / 3;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+        .bento-side {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .bento-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-style: italic;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #cbd5e1 50%, transparent 100%);
+            margin: 4rem 0;
+        }
+        .citation-link {
+            color: #8b5cf6;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted #8b5cf6;
+        }
+        .citation-link:hover {
+            color: #7c3aed;
+            border-bottom-style: solid;
+        }
+        .math-display {
+            background: #f1f5f9;
+            border-left: 4px solid #8b5cf6;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0;
+            color: #374151;
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+        }
+        .toc-link:hover, .toc-link.active {
+            color: #8b5cf6;
+            border-left-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.05);
+        }
+        .toc-link.sub {
+            font-size: 0.875rem;
+            padding-left: 2rem;
+            color: #6b7280;
+        }
+        @media (max-width: 1024px) {
+            .toc-fixed {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .toc-fixed.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+                gap: 1rem;
+            }
+            .bento-main {
+                grid-row: auto;
+                height: 50vh;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-gradient .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+  </head>
+
+  <body class="bg-base-100 text-neutral font-sans">
+    <!-- Mobile Menu Toggle -->
+    <button id="mobile-menu-toggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-3 rounded-full shadow-lg">
+      <i class="fas fa-bars text-neutral"></i>
+    </button>
+
+    <!-- Table of Contents -->
+    <nav id="toc" class="toc-fixed">
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-neutral mb-4">Table of Contents</h2>
+        <a href="#executive-summary" class="toc-link">Executive Summary</a>
+        <a href="#foundations" class="toc-link">1. SSH Model Foundations</a>
+        <a href="#hamiltonian" class="toc-link sub">1.1 Hamiltonian &amp; Structure</a>
+        <a href="#band-structure" class="toc-link sub">1.2 Band Structure</a>
+        <a href="#topological-phases" class="toc-link">2. Topological Phases</a>
+        <a href="#winding-number" class="toc-link sub">2.1 Winding Number</a>
+        <a href="#zak-phase" class="toc-link sub">2.2 Zak Phase</a>
+        <a href="#real-space" class="toc-link sub">2.3 Real-Space Invariants</a>
+        <a href="#edge-states" class="toc-link">3. Edge States &amp; Bulk-Boundary</a>
+        <a href="#existence" class="toc-link sub">3.1 Existence of Edge States</a>
+        <a href="#fractional-charge" class="toc-link sub">3.2 Fractional Charge</a>
+        <a href="#bulk-boundary" class="toc-link sub">3.3 Bulk-Boundary Principle</a>
+        <a href="#symmetries" class="toc-link">4. Role of Symmetries</a>
+        <a href="#chiral" class="toc-link sub">4.1 Chiral Symmetry</a>
+        <a href="#time-reversal" class="toc-link sub">4.2 Time-Reversal &amp; PHS</a>
+        <a href="#inversion" class="toc-link sub">4.3 Inversion Symmetry</a>
+        <a href="#disorder" class="toc-link">5. Effects of Disorder</a>
+        <a href="#robustness" class="toc-link sub">5.1 Symmetry-Respecting Disorder</a>
+        <a href="#diagonal-disorder" class="toc-link sub">5.2 Diagonal vs Off-Diagonal</a>
+        <a href="#tai" class="toc-link sub">5.3 Topological Anderson Insulator</a>
+        <a href="#interactions" class="toc-link">6. Effects of Interactions</a>
+        <a href="#bosonization" class="toc-link sub">6.1 Bosonization Approaches</a>
+        <a href="#renormalization" class="toc-link sub">6.2 Renormalization</a>
+        <a href="#persistence" class="toc-link sub">6.3 Edge State Persistence</a>
+        <a href="#transitions" class="toc-link sub">6.4 Phase Transitions</a>
+        <a href="#numerical" class="toc-link sub">6.5 Numerical Studies</a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section class="hero-gradient relative overflow-hidden">
+        <div class="container mx-auto px-8 py-16">
+          <div class="bento-grid">
+            <div class="bento-main hero-gradient relative">
+              <img src="https://kimi-web-img.moonshot.cn/img/media.springernature.com/6f6bfc976f84cb14d281170f48729020740d629e.png" alt="Topological edge states in SSH lattice" class="absolute inset-0 w-full h-full object-cover opacity-30" size="large" aspect="wide" query="SSH model edge states" referrerpolicy="no-referrer" data-modified="1" data-score="11590.00"/>
+              <div class="absolute inset-0 bg-gradient-to-br from-primary/80 via-secondary/60 to-accent/40"></div>
+              <div class="relative z-10 p-8 h-full flex flex-col justify-center">
+                <h1 class="hero-title font-serif mb-6">
+                  Topological Aspects of the
+                  <br/>
+                  SSH Model
+                </h1>
+                <p class="text-xl text-white/90 font-light max-w-2xl">
+                  A comprehensive exploration of topological phases, edge states, and symmetry-protected phenomena in the Su-Schrieffer-Heeger model
+                </p>
+              </div>
+            </div>
+            <div class="bento-side">
+              <div class="bento-card">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-atom text-secondary text-xl mr-3"></i>
+                  <h3 class="font-semibold text-neutral">Key Parameters</h3>
+                </div>
+                <p class="text-sm text-gray-600">Intracell (v) and intercell (w) hopping amplitudes define topological phases</p>
+              </div>
+              <div class="bento-card">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-infinity text-accent text-xl mr-3"></i>
+                  <h3 class="font-semibold text-neutral">Topological Invariants</h3>
+                </div>
+                <p class="text-sm text-gray-600">Winding number ν = 0 (trivial) or 1 (non-trivial) characterizes phases</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Executive Summary -->
+      <section id="executive-summary" class="py-16 bg-base-200">
+        <div class="container mx-auto px-8">
+          <div class="max-w-4xl">
+            <h2 class="text-3xl font-serif font-bold text-neutral mb-8">Executive Summary</h2>
+            <div class="prose prose-lg max-w-none">
+              <p class="text-lg leading-relaxed mb-6">
+                The Su-Schrieffer-Heeger (SSH) model represents a paradigmatic example of a one-dimensional topological insulator, exhibiting rich phenomenology that has become foundational to understanding topological phases of matter. Originally developed to describe polyacetylene&#39;s electronic properties <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[78]</a>, <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[123]</a>, this dimerized chain model demonstrates how simple lattice structures can host robust topological phenomena.
+              </p>
+
+              <div class="highlight-box">
+                <h3 class="font-semibold text-neutral mb-3">Key Findings</h3>
+                <ul class="space-y-2">
+                  <li><strong>Topological Classification:</strong> The SSH model exhibits two distinct phases characterized by winding numbers ν = 0 (trivial) and ν = 1 (non-trivial), separated by a gap-closing transition at |v| = |w|</li>
+                  <li><strong>Edge State Physics:</strong> Non-trivial phases host robust zero-energy edge states protected by chiral symmetry, with fractional charge e/2 localization</li>
+                  <li><strong>Symmetry Protection:</strong> Chiral (sublattice) symmetry serves as the primary protector of topological properties, enabling quantized topological invariants</li>
+                  <li><strong>Disorder Effects:</strong> Symmetry-respecting disorder preserves topological phases, while symmetry-breaking disorder typically destroys them</li>
+                  <li><strong>Interaction Consequences:</strong> Electron-electron interactions can renormalize topological properties and induce phase transitions</li>
+                </ul>
+              </div>
+
+              <p class="text-lg leading-relaxed">
+                The model&#39;s elegance lies in its simplicity: a two-atom unit cell with alternating hopping amplitudes creates the necessary conditions for topological phenomena. This simplicity has made the SSH model a cornerstone for understanding more complex topological systems and a testbed for exploring the interplay between topology, symmetry, and correlation effects.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- SSH Model Foundations -->
+      <section id="foundations" class="py-16">
+        <div class="container mx-auto px-8">
+          <h2 class="text-4xl font-serif font-bold text-neutral mb-12">1. The SSH Model: Foundations</h2>
+
+          <article id="hamiltonian" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">1.1 Hamiltonian and Lattice Structure</h3>
+
+            <p class="text-lg leading-relaxed mb-6">
+              The Su-Schrieffer-Heeger model is defined on a one-dimensional lattice featuring a two-atom unit cell, with sublattices A and B forming a dimerized chain structure. The Hamiltonian for spinless fermions with nearest-neighbor hopping is expressed as <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[56]</a>, <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[157]</a>:
+            </p>
+
+            <div class="math-display">
+              Ĥ = v Σⱼ (c<sub>A,j</sub>† c<sub>B,j</sub> + h.c.) + w Σⱼ (c<sub>B,j</sub>† c<sub>A,j+1</sub> + h.c.)
+            </div>
+
+            <p class="leading-relaxed mb-6">
+              Here, v represents the intracell hopping amplitude, while w represents the intercell hopping amplitude. The model&#39;s topological properties emerge from the competition between these two hopping parameters. Through Fourier transformation, the Hamiltonian can be expressed in momentum space using the Bloch Hamiltonian <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[56]</a>:
+            </p>
+
+            <div class="math-display">
+              H(k) = d<sub>x</sub>(k) σ<sub>x</sub> + d<sub>y</sub>(k) σ<sub>y</sub>
+            </div>
+
+            <p class="leading-relaxed">
+              where d<sub>x</sub>(k) = v + w cos(ka) and d<sub>y</sub>(k) = -w sin(ka). The absence of a d<sub>z</sub>(k)σ<sub>z</sub> term reflects the model&#39;s chiral symmetry, which is crucial for its topological classification.
+            </p>
+          </article>
+
+          <article id="band-structure" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">1.2 Band Structure and Gap Closing</h3>
+
+            <p class="leading-relaxed mb-6">
+              Diagonalization of the Bloch Hamiltonian yields two energy bands symmetric around E = 0 <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[56]</a>, <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[157]</a>:
+            </p>
+
+            <div class="math-display">
+              E<sub>±</sub>(k) = ±√(v² + w² + 2vw cos(ka))
+            </div>
+
+            <p class="leading-relaxed mb-6">
+              The system exhibits a gapped spectrum except at the critical points v = ±w, where the energy gap closes, signaling a quantum phase transition between topologically distinct phases. For |v| &lt; |w|, the system enters a topologically non-trivial phase (ν=1), while |v|&gt; |w| corresponds to the trivial phase (ν=0) <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[73]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[78]</a>.
+                </p>
+
+                <div class="highlight-box">
+                  <h4 class="font-semibold text-neutral mb-3">Critical Points</h4>
+                  <ul class="space-y-2">
+                    <li><strong>v = w:</strong> Gap closes at ka = π (Brillouin zone boundary)</li>
+                    <li><strong>v = -w:</strong> Gap closes at ka = 0 (Brillouin zone center)</li>
+                    <li><strong>Band gap magnitude:</strong> 2|v - w| at ka = π and 2|v + w| at ka = 0</li>
+                  </ul>
+                </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Topological Phases -->
+      <section id="topological-phases" class="py-16 bg-base-200">
+        <div class="container mx-auto px-8">
+          <h2 class="text-4xl font-serif font-bold text-neutral mb-12">2. Topological Phases and Invariants</h2>
+
+          <article id="winding-number" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">2.1 Winding Number (ν)</h3>
+
+            <p class="leading-relaxed mb-6">
+              The winding number serves as the fundamental topological invariant characterizing SSH model phases. It quantifies how the Bloch vector d(k) wraps around the origin in the d<sub>x</sub>-d<sub>y</sub> plane as k traverses the Brillouin zone <a href="http://albi3ro.github.io/M4/WindingNumber.html" class="citation-link">[13]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[73]</a>.
+            </p>
+
+            <div class="math-display">
+              ν = (1/2π) ∫ dk [d<sub>x</sub>(k) ∂<sub>k</sub>d<sub>y</sub>(k) - d<sub>y</sub>(k) ∂<sub>k</sub>d<sub>x</sub>(k)] / [d<sub>x</sub>(k)² + d<sub>y</sub>(k)²]
+            </div>
+
+            <p class="leading-relaxed mb-6">
+              This integral evaluates to 1 when |w| &gt; |v| and 0 when |w| &lt; |v|, directly linking the bulk topological invariant to the presence of edge states through the bulk-boundary correspondence. </p>
+
+                <div class="highlight-box">
+                  <h4 class="font-semibold text-neutral mb-3">Winding Number Interpretation</h4>
+                  <p class="mb-3">The winding number counts the number of times the complex function h(k) = v + we<sup>-ika</sup> winds around the origin in the complex plane, providing a geometric interpretation of the topological phase.</p>
+                  <ul class="space-y-2">
+                    <li><strong>ν = 0:</strong> Trivial phase, no edge states</li>
+                    <li><strong>ν = 1:</strong> Non-trivial phase, one pair of edge states</li>
+                  </ul>
+                </div>
+          </article>
+
+          <article id="zak-phase" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">2.2 Zak Phase (γ) and Electric Polarization</h3>
+
+            <p class="leading-relaxed mb-6">
+              The Zak phase represents the Berry phase acquired by a Bloch state traversing the Brillouin zone and is intimately related to electric polarization <a href="http://albi3ro.github.io/M4/WindingNumber.html" class="citation-link">[13]</a>, <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[157]</a>:
+            </p>
+
+            <div class="math-display">
+              γ<sub>n</sub> = i ∮<sub>BZ</sub> ⟨u<sub>n,k</sub>|∇<sub>k</sub>|u<sub>n,k</sub>⟩ dk
+            </div>
+
+            <p class="leading-relaxed mb-6">
+              In the SSH model, chiral symmetry quantizes the Zak phase to 0 or π (mod 2π), with the simple relationship γ<sub>-</sub> = πν (mod 2π). This quantization directly relates to the fractional polarization P = eγ<sub>-</sub>/(2π) = e/2 (mod e) in the topological phase <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[56]</a>, <a href="https://arxiv.org/pdf/2209.05981" class="citation-link">[171]</a>.
+            </p>
+          </article>
+
+          <article id="real-space" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">2.3 Real-Space Winding Number and Local Markers</h3>
+
+            <p class="leading-relaxed mb-6">
+              For systems lacking translational symmetry, real-space topological invariants become essential. The Real-Space Winding Number (RSWN) provides such a formulation using the chiral symmetry operator S and projection operator P onto occupied states <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[78]</a>:
+            </p>
+
+            <div class="math-display">
+              ν<sub>RSWN</sub> = Tr<sub>L</sub>(SQ[Q,X]P)
+            </div>
+
+            <p class="leading-relaxed">
+              This formulation remains robust against symmetry-respecting disorder and provides a powerful tool for characterizing topology in finite and disordered systems <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[73]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[78]</a>. Additional real-space markers include the Local Topological Marker and Mean Chiral Displacement <a href="https://arxiv.org/html/2504.16200v1" class="citation-link">[81]</a>.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Edge States and Bulk-Boundary -->
+      <section id="edge-states" class="py-16">
+        <div class="container mx-auto px-8">
+          <h2 class="text-4xl font-serif font-bold text-neutral mb-12">3. Edge States and Bulk-Boundary Correspondence</h2>
+
+          <article id="existence" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">3.1 Existence and Nature of Edge States</h3>
+
+            <p class="leading-relaxed mb-6">
+              The most striking consequence of non-trivial topology in the SSH model is the appearance of robust edge states when the system has open boundaries. In the topologically non-trivial phase (|v| &lt; |w|, ν=1), two mid-gap states exponentially localized at the chain ends emerge <a href="https://arxiv.org/abs/2506.17786" class="citation-link">[36]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[73]</a>. </p>
+
+                <p class="leading-relaxed mb-6">
+                  These zero-energy modes exhibit wavefunctions that decay exponentially into the bulk, with localization length ξ that diverges as v approaches w. The number of edge state pairs equals the absolute value of the winding number |ν|, with extended SSH models supporting higher winding numbers hosting multiple edge state pairs <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[73]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[78]</a>.
+                </p>
+
+                <div class="highlight-box">
+                  <h4 class="font-semibold text-neutral mb-3">Edge State Characteristics</h4>
+                  <ul class="space-y-2">
+                    <li><strong>Energy:</strong> Zero-energy modes protected by chiral symmetry</li>
+                    <li><strong>Localization:</strong> Exponential decay |ψ(j)| ∼ e<sup>-j/ξ</sup></li>
+                    <li><strong>Hybridization:</strong> Finite-size effects cause energy splitting in short chains</li>
+                    <li><strong>Protection:</strong> Robust against symmetry-preserving perturbations</li>
+                  </ul>
+                </div>
+          </article>
+
+          <article id="fractional-charge" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">3.2 Fractional Charge and Localization</h3>
+
+            <p class="leading-relaxed mb-6">
+              The topological nature of edge states manifests in fractional charge accumulation. Each edge state contributes a fractional charge of e/2 when half-occupied, directly linked to the quantized Zak phase γ = π and polarization P = e/2 (mod e) <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[56]</a>, <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[185]</a>.
+            </p>
+
+            <p class="leading-relaxed">
+              This fractional charge represents a hallmark of 1D topological insulators and reflects the charge density wave pinned at the boundary, demonstrating how topology can lead to fractionalization phenomena in condensed matter systems.
+            </p>
+          </article>
+
+          <article id="bulk-boundary" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">3.3 Bulk-Boundary Correspondence Principle</h3>
+
+            <p class="leading-relaxed mb-6">
+              The bulk-boundary correspondence establishes a fundamental relationship between bulk topological invariants and boundary phenomena. For the SSH model, the winding number ν calculated from the bulk Hamiltonian directly predicts the number of edge state pairs in a finite system <a href="https://arxiv.org/abs/2506.17786" class="citation-link">[36]</a>:
+            </p>
+
+            <ul class="space-y-3 mb-6">
+              <li><strong>ν = 1:</strong> One pair of edge states (one at each end)</li>
+              <li><strong>ν = 0:</strong> No topologically protected edge states</li>
+            </ul>
+
+            <p class="leading-relaxed">
+              This principle highlights how bulk topological properties dictate boundary behavior, with edge states representing &#34;anomalous&#34; excitations that cannot be continuously deformed into bulk states without closing the energy gap or breaking protecting symmetries. The stability of these edge states is guaranteed as long as the bulk gap remains open and relevant symmetries are preserved.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Role of Symmetries -->
+      <section id="symmetries" class="py-16 bg-base-200">
+        <div class="container mx-auto px-8">
+          <h2 class="text-4xl font-serif font-bold text-neutral mb-12">4. Role of Symmetries</h2>
+
+          <article id="chiral" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">4.1 Chiral (Sublattice) Symmetry (Class AIII)</h3>
+
+            <p class="leading-relaxed mb-6">
+              Chiral symmetry, represented by the unitary operator 𝒞 = σ<sub>z</sub>, plays a paramount role in the SSH model&#39;s topological properties. The Hamiltonian satisfies 𝒞H𝒞<sup>-1</sup> = -H, ensuring spectral symmetry around E = 0 <a href="http://albi3ro.github.io/M4/WindingNumber.html" class="citation-link">[14]</a>, <a href="https://www.nature.com/articles/s41598-025-02284-5" class="citation-link">[112]</a>.
+            </p>
+
+            <p class="leading-relaxed mb-6">
+              This symmetry is crucial for the quantization of topological invariants. The off-diagonal structure of H(k) in the sublattice basis, protected by chiral symmetry, enables the winding number&#39;s integer quantization. The SSH model belongs to symmetry class AIII, characterized by an integer topological invariant in one dimension <a href="http://albi3ro.github.io/M4/WindingNumber.html" class="citation-link">[14]</a>, <a href="https://www.quantum-munich.de/393137/group-seminar-at-lmu-and-zoom-the-ssh-model-10-fold-way-spt-classification-and-band-topology-in-1d-classical-system-with-inversion-symmetry" class="citation-link">[203]</a>.
+            </p>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-neutral mb-3">Consequences of Chiral Symmetry</h4>
+              <ul class="space-y-2">
+                <li><strong>Energy spectrum symmetry:</strong> For every eigenstate |ψ<sub>E</sub>⟩, there exists 𝒞|ψ<sub>E</sub>⟩ with energy -E</li>
+                <li><strong>Topological quantization:</strong> Winding number and Zak phase are quantized to integer values</li>
+                <li><strong>Edge state protection:</strong> Zero-energy states are pinned at E = 0</li>
+                <li><strong>Robustness:</strong> Topological phases persist under symmetry-preserving perturbations</li>
+              </ul>
+            </div>
+          </article>
+
+          <article id="time-reversal" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">4.2 Time-Reversal and Particle-Hole Symmetry (Class BDI)</h3>
+
+            <p class="leading-relaxed mb-6">
+              For spinless fermions with real hopping amplitudes, the SSH model possesses time-reversal symmetry (TRS) and particle-hole symmetry (PHS) in addition to chiral symmetry, placing it in symmetry class BDI <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[78]</a>, <a href="https://grushingroup.cnrs.fr/wp-content/uploads/2021/05/intro_to_topo-1-1.pdf" class="citation-link">[200]</a>.
+            </p>
+
+            <p class="leading-relaxed mb-6">
+              TRS is represented by complex conjugation K with 𝒯<sup>2</sup> = +1, while PHS satisfies 𝒫<sup>2</sup> = +1. The combination 𝒫 = 𝒯𝒞 relates these symmetries <a href="https://www.nature.com/articles/s41598-025-02284-5" class="citation-link">[110]</a>, <a href="https://jhwilson.github.io/blog/2022/SSH-model/" class="citation-link">[117]</a>. While BDI classification provides additional constraints, the fundamental topological protection stems from chiral symmetry alone.
+            </p>
+          </article>
+
+          <article id="inversion" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">4.3 Inversion Symmetry</h3>
+
+            <p class="leading-relaxed mb-6">
+              Inversion symmetry provides an alternative route to understanding Zak phase quantization. In 1D systems with inversion symmetry, the Zak phase is quantized to 0 or π (mod 2π) <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[185]</a>.
+            </p>
+
+            <p class="leading-relaxed">
+              This symmetry offers complementary insights to chiral symmetry, with sub-symmetry-protected topological states potentially persisting even when full chiral symmetry is broken, provided inversion symmetry is maintained <a href="https://www.nature.com/articles/s41567-023-02011-9" class="citation-link">[112]</a>, <a href="https://www.nature.com/articles/s41567-023-02011-9" class="citation-link">[218]</a>.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Effects of Disorder -->
+      <section id="disorder" class="py-16">
+        <div class="container mx-auto px-8">
+          <h2 class="text-4xl font-serif font-bold text-neutral mb-12">5. Effects of Disorder</h2>
+
+          <article id="robustness" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">5.1 Robustness to Symmetry-Respecting Disorder</h3>
+
+            <p class="leading-relaxed mb-6">
+              Topological phases exhibit remarkable robustness against symmetry-preserving disorder. The real-space winding number remains quantized under hopping disorder that maintains chiral symmetry <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[78]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[31]</a>.
+            </p>
+
+            <p class="leading-relaxed">
+              This robustness extends to dynamical observables like the mean chiral displacement, which can detect topological phases even in disordered systems <a href="https://www.nature.com/articles/s41534-019-0159-6" class="citation-link">[30]</a>. The protection mechanism relies on the preservation of the fundamental sublattice structure that underpins chiral symmetry.
+            </p>
+          </article>
+
+          <article id="diagonal-disorder" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">5.2 Impact of Diagonal vs. Off-Diagonal Disorder</h3>
+
+            <p class="leading-relaxed mb-6">
+              The SSH model&#39;s response to disorder critically depends on whether chiral symmetry is preserved. Diagonal (on-site) disorder typically breaks chiral symmetry, while off-diagonal (hopping) disorder can preserve it <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[31]</a>, <a href="https://arxiv.org/html/2402.01236v2" class="citation-link">[34]</a>.
+            </p>
+
+            <div class="overflow-x-auto mb-6">
+              <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr class="bg-gray-100">
+                    <th class="border border-gray-300 p-3 text-left">Disorder Type</th>
+                    <th class="border border-gray-300 p-3 text-left">Chiral Symmetry</th>
+                    <th class="border border-gray-300 p-3 text-left">Topological Protection</th>
+                    <th class="border border-gray-300 p-3 text-left">Localization Behavior</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-gray-300 p-3 font-medium">Diagonal (On-Site)</td>
+                    <td class="border border-gray-300 p-3">No</td>
+                    <td class="border border-gray-300 p-3">Generally destroyed</td>
+                    <td class="border border-gray-300 p-3">Exponential localization</td>
+                  </tr>
+                  <tr class="bg-gray-50">
+                    <td class="border border-gray-300 p-3 font-medium">Off-Diagonal (Hopping)</td>
+                    <td class="border border-gray-300 p-3">Yes</td>
+                    <td class="border border-gray-300 p-3">Robust up to strong disorder</td>
+                    <td class="border border-gray-300 p-3">Anomalous E=0 localization</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-sm text-gray-600 italic">
+              Table 1: Comparison of disorder effects on SSH model topological properties <a href="https://www.researchgate.net/publication/323141967_SSH_model_with_long-range_hoppings_topology_driving_and_disorder" class="citation-link">[27]</a>, <a href="https://arxiv.org/html/2402.01236v2" class="citation-link">[34]</a>, <a href="https://www.sciencedirect.com/science/article/abs/pii/S037596012200086X" class="citation-link">[26]</a>, <a href="https://arxiv.org/html/2411.17822v1" class="citation-link">[31]</a>.
+            </p>
+          </article>
+
+          <article id="tai" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">5.3 Topological Anderson Insulator Phase</h3>
+
+            <p class="leading-relaxed mb-6">
+              A remarkable phenomenon occurs when disorder induces topological properties in an initially trivial system, creating a Topological Anderson Insulator (TAI) phase. Random binary disorder can drive a transition from trivial to topological regime <a href="https://www.sciencedirect.com/science/article/abs/pii/S037596012200086X" class="citation-link">[26]</a>, <a href="https://scipost.org/SciPostPhysCore.3.2.012/pdf" class="citation-link">[84]</a>.
+            </p>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-neutral mb-3">TAI Mechanism</h4>
+              <p class="mb-3">Disorder-induced renormalization of system parameters effectively drives the system across a topological phase transition:</p>
+              <ul class="space-y-2">
+                <li><strong>Parameter renormalization:</strong> Disorder modifies effective hopping ratios</li>
+                <li><strong>Localization length divergence:</strong> Signals topological phase transition</li>
+                <li><strong>Edge state emergence:</strong> Zero-energy modes appear despite trivial clean limit</li>
+                <li><strong>Detection:</strong> Mean chiral displacement serves as robust dynamical observable</li>
+              </ul>
+            </div>
+
+            <p class="leading-relaxed">
+              The TAI phenomenon demonstrates that disorder can serve as a tool for engineering topological states, challenging the conventional view of disorder as purely detrimental to quantum coherence and phase stability.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Effects of Interactions -->
+      <section id="interactions" class="py-16 bg-base-200">
+        <div class="container mx-auto px-8">
+          <h2 class="text-4xl font-serif font-bold text-neutral mb-12">6. Effects of Interactions</h2>
+
+          <article id="bosonization" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">6.1 Bosonization and Field Theory Approaches</h3>
+
+            <p class="leading-relaxed mb-6">
+              Analytical treatment of interacting SSH models often employs low-energy field theory mappings. The interacting SSH model can be mapped onto the Thirring model, a solvable (1+1)-dimensional quantum field theory <a href="https://arxiv.org/abs/2408.01421" class="citation-link">[121]</a>, <a href="https://arxiv.org/html/2408.01421v1" class="citation-link">[126]</a>:
+            </p>
+
+            <div class="math-display">
+              ℒ = Ψ̄(x)(iv<sub>F</sub>∂̸ - m<sub>0</sub>)Ψ(x) - (g/2)[Ψ̄(x)γ<sub>μ</sub>Ψ(x)]²
+            </div>
+
+            <p class="leading-relaxed mb-6">
+              This mapping reveals that while the topological index sign(m) remains quantized, the polarization magnitude is modified by interactions <a href="https://arxiv.org/pdf/2408.01421" class="citation-link">[129]</a>:
+            </p>
+
+            <div class="math-display">
+              P = (1/4)[(1/(1 - g/π)) + 1 - g/π] sign(m)
+            </div>
+
+            <p class="leading-relaxed">
+              This result demonstrates interaction-induced renormalization of quasiparticle charge while preserving topological classification in the gapped regime.
+            </p>
+          </article>
+
+          <article id="renormalization" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">6.2 Renormalization of Topological Invariants</h3>
+
+            <p class="leading-relaxed mb-6">
+              Electron-electron interactions lead to renormalization of topological properties, primarily affecting response function magnitudes rather than discrete topological classification within certain regimes. However, strong interactions can fundamentally alter phase diagrams <a href="https://link.aps.org/doi/10.1103/PhysRevB.111.195117" class="citation-link">[145]</a>, <a href="https://arxiv.org/abs/2410.06901" class="citation-link">[147]</a>.
+            </p>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-neutral mb-3">Interaction Effects</h4>
+              <ul class="space-y-2">
+                <li><strong>Perturbative regime:</strong> Topological classification preserved, response functions renormalized</li>
+                <li><strong>Non-perturbative regime:</strong> Phase boundaries shifted, new phases emerge</li>
+                <li><strong>Critical phases:</strong> Gapped out by interactions, driving topological transitions</li>
+                <li><strong>Multicritical points:</strong> Enhanced sensitivity to interactions</li>
+              </ul>
+            </div>
+          </article>
+
+          <article id="persistence" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">6.3 Persistence and Modification of Edge States</h3>
+
+            <p class="leading-relaxed mb-6">
+              Numerical studies of interacting SSH models reveal that topological edge states can persist even with substantial Hubbard U interactions. CP-AFQMC studies demonstrate robust edge states against interaction, quantified through spin correlations and entanglement entropy <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12102318/" class="citation-link">[140]</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/40410324/" class="citation-link">[141]</a>.
+            </p>
+
+            <p class="leading-relaxed">
+              Interactions can modify edge state character, affecting charge localization and creating new many-body edge phenomena. At quarter filling, edge population shows sharp increases with Hubbard U, suggesting interaction-enhanced charge localization <a href="https://arxiv.org/abs/2408.10319" class="citation-link">[141]</a>.
+            </p>
+          </article>
+
+          <article id="transitions" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">6.4 Interaction-Induced Topological Phase Transitions</h3>
+
+            <p class="leading-relaxed mb-6">
+              Strong electron-electron interactions can drive transitions between topological phases. Extended SSH models with Hubbard interactions exhibit interaction-driven transitions from trivial to topological insulator phases <a href="https://link.aps.org/doi/10.1103/PhysRevB.111.195117" class="citation-link">[145]</a>.
+            </p>
+
+            <p class="leading-relaxed mb-6">
+              The SSH4 model reveals a rich phase diagram containing topological insulator, trivial insulator, and charge density wave phases, with continuous transitions between them <a href="https://axi.lims.ac.uk/paper/2208.00390" class="citation-link">[151]</a>.
+            </p>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-neutral mb-3">Phase Transition Mechanisms</h4>
+              <ul class="space-y-2">
+                <li><strong>Gap opening:</strong> Interactions can open gaps in critical phases</li>
+                <li><strong>Band structure modification:</strong> Effective hopping parameters renormalized</li>
+                <li><strong>Order parameter competition:</strong> Topological order vs. charge/spin order</li>
+                <li><strong>Continuous transitions:</strong> Smooth crossover between topological phases</li>
+              </ul>
+            </div>
+          </article>
+
+          <article id="numerical" class="mb-16">
+            <h3 class="text-2xl font-serif font-semibold text-neutral mb-6">6.5 Numerical Studies (DMRG, AFQMC)</h3>
+
+            <p class="leading-relaxed mb-6">
+              Numerical simulations are indispensable for understanding interacting SSH models. Density Matrix Renormalization Group (DMRG) and Quantum Monte Carlo (QMC) methods provide crucial insights into many-body physics <a href="https://arxiv.org/html/2408.10319v1" class="citation-link">[131]</a>, <a href="https://arxiv.org/abs/2408.10319" class="citation-link">[135]</a>.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bento-card">
+                <h4 class="font-semibold text-neutral mb-3">DMRG Applications</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Ground state properties</li>
+                  <li>• Spectral functions</li>
+                  <li>• Entanglement spectra</li>
+                  <li>• Phase diagram mapping</li>
+                </ul>
+              </div>
+              <div class="bento-card">
+                <h4 class="font-semibold text-neutral mb-3">CP-AFQMC Advantages</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Numerically exact results</li>
+                  <li>• Long-range correlations</li>
+                  <li>• Rényi entanglement entropy</li>
+                  <li>• Edge state robustness</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="py-8 bg-neutral text-white">
+        <div class="container mx-auto px-8">
+          <div class="text-center">
+            <p class="text-sm opacity-75">
+              This comprehensive overview synthesizes current understanding of topological aspects in the SSH model, drawing from multiple theoretical and numerical studies.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        const toc = document.getElementById('toc');
+        
+        mobileToggle.addEventListener('click', () => {
+            toc.classList.toggle('open');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!toc.contains(e.target) && !mobileToggle.contains(e.target)) {
+                toc.classList.remove('open');
+            }
+        });
+
+        // Active section highlighting in TOC
+        const sections = document.querySelectorAll('section[id], article[id]');
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        function updateActiveTocLink() {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveTocLink);
+        updateActiveTocLink();
+
+        // Close mobile TOC when a link is clicked (on small screens)
+        tocLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    toc.classList.remove('open');
+                }
+            });
+        });
+    </script>
+  
+
+</body></html>
