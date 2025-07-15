@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Real Space to Momentum Space: An Infographic</title>
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The infographic tells a linear story in five sections to guide the user from the abstract to the concrete. 1) 'The Two Worlds' introduces the core concept via a direct visual comparison. 2) 'The Bridge' uses a flowchart to demystify the transformation process. 3) 'A Concrete Example' focuses on the Tight-Binding model to ground the theory. 4) 'Visualizing the Result' presents the key payoff—the band structure—as an interactive chart. 5) 'Why It Matters' summarizes the benefits. This narrative structure is more digestible for learning than a simple document dump, turning a technical paper into an educational journey. -->
+    <!-- Visualization & Content Choices: 
+        - Data Point: Real vs. Momentum Space. Goal: Compare. Viz: Two-column card layout. Justification: A simple, direct side-by-side comparison is the clearest way to introduce the two perspectives. Method: HTML/CSS with Tailwind. (CONFIRMED: NO SVG/Mermaid).
+        - Data Point: Transformation Process. Goal: Organize. Viz: HTML/CSS based flowchart. Justification: Visually breaks down the multi-step mathematical process into a logical flow, making it easier to follow than prose. Method: HTML/CSS with Tailwind and Unicode arrows. (CONFIRMED: NO SVG/Mermaid).
+        - Data Point: Tight-Binding Model Energy Dispersion. Goal: Change/Relationships. Viz: Line Chart. Justification: This is the most effective way to show the relationship between electron energy (E) and momentum (k), which is the central, quantitative result of the example. Method: Chart.js/Canvas. (CONFIRMED: NO SVG/Mermaid).
+        - Data Point: Significance of Momentum Space. Goal: Inform. Viz: Icon-based list. Justification: Uses simple visuals to create a scannable, high-impact summary of the key takeaways. Method: HTML/Unicode. (CONFIRMED: NO SVG/Mermaid).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        h1, h2, h3 { font-weight: 700; }
+        .math { font-family: 'Roboto Mono', monospace; }
+        .card { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight" style="color: #003f5c;">From Real Space to Momentum Space</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">An interactive infographic on a key transformation in condensed matter physics.</p>
+        </header>
+
+        <section id="worlds" class="mb-20">
+            <h2 class="text-3xl text-center mb-10" style="color: #374c80;">Two Worlds, One System</h2>
+            <p class="text-center text-slate-600 mb-10 max-w-3xl mx-auto">To understand electrons in a crystal, physicists use two different perspectives. The choice of perspective dramatically simplifies the problem.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-6 border-t-4" style="border-color: #ef5675;">
+                    <h3 class="text-2xl mb-3">📍 Real Space: The Intuitive View</h3>
+                    <p class="text-slate-600 mb-4">Describes particles by their physical positions (\(\mathbf{r}\)). It's like using a street map. While direct, it's incredibly difficult to calculate the behavior of countless interacting particles.</p>
+                    <p class="font-bold">Key Operator: \( H(\mathbf{r}) \)</p>
+                </div>
+                <div class="card p-6 border-t-4" style="border-color: #7a5195;">
+                    <h3 class="text-2xl mb-3">🌊 Momentum Space: The Wave View</h3>
+                    <p class="text-slate-600 mb-4">Describes particles as waves with a crystal momentum (\(\mathbf{k}\)). By using the crystal's symmetry, complex calculations become manageable, revealing collective properties like band structure.</p>
+                    <p class="font-bold">Key Operator: \( H(\mathbf{k}) \)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="bridge" class="mb-20">
+            <h2 class="text-3xl text-center mb-10" style="color: #374c80;">The Bridge: A Fourier Transform</h2>
+             <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">The link between these two worlds is a mathematical tool called the Fourier Transform. It deconstructs the real-space description into its fundamental wave components.</p>
+            <div class="flex flex-col items-center space-y-4">
+                <div class="card p-6 w-full md:w-3/4 text-center">
+                    <p class="text-lg">Start with the Real-Space Hamiltonian:</p>
+                    <p class="text-2xl math mt-2">\( \hat{H} = \hat{T} + \hat{V} = -\frac{\hbar^2}{2m} \nabla^2 + V(\mathbf{r}) \)</p>
+                </div>
+                <div class="text-4xl font-bold" style="color: #ffa600;">↓</div>
+                <div class="w-full grid md:grid-cols-2 gap-8">
+                    <div class="card p-4 text-center">
+                        <h4 class="font-bold">Transform Kinetic Energy \(\hat{T}\)</h4>
+                        <p class="text-sm text-slate-500">Differential → Multiplication</p>
+                        <p class="math text-xl mt-2">\( \hat{T}_{\mathbf{k}} = \frac{\hbar^2 k^2}{2m} \)</p>
+                    </div>
+                     <div class="card p-4 text-center">
+                        <h4 class="font-bold">Transform Potential Energy \(\hat{V}\)</h4>
+                        <p class="text-sm text-slate-500">Function → Fourier Components</p>
+                        <p class="math text-xl mt-2">\( V(\mathbf{r}) \rightarrow V_{\mathbf{G}} \)</p>
+                    </div>
+                </div>
+                <div class="text-4xl font-bold" style="color: #ffa600;">↓</div>
+                 <div class="card p-6 w-full md:w-3/4 text-center" style="background-color: #e8eaf6;">
+                    <p class="text-lg">Arrive at the Momentum-Space Hamiltonian:</p>
+                    <p class="text-xl math mt-2">\( H_{\mathbf{k}, \mathbf{G}'} = \frac{\hbar^2 |\mathbf{k} + \mathbf{G}'|^2}{2m} \delta_{\mathbf{G}', \mathbf{G}} + V_{\mathbf{G} - \mathbf{G}'} \)</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="example" class="mb-20">
+            <h2 class="text-3xl text-center mb-4" style="color: #374c80;">A Concrete Example: The Tight-Binding Model</h2>
+            <p class="text-center text-slate-600 mb-10 max-w-3xl mx-auto">Let's see this in action with a model for a 1D chain of atoms. Electrons have an on-site energy \(\epsilon_0\) and can "hop" between neighboring atoms with strength \(t\).</p>
+            <div class="card p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-xl font-bold mb-3">Real-Space Hamiltonian:</h3>
+                        <p class="text-slate-600 mb-4">A sum over all atomic sites \(n\).</p>
+                        <div class="p-4 rounded-lg bg-slate-100">
+                            <p class="math text-lg">\( \hat{H} = \sum_n \epsilon_0 c_n^\dagger c_n - t \sum_n (c_n^\dagger c_{n+1} + c_{n+1}^\dagger c_n) \)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-3" style="color: #7a5195;">Result in Momentum Space:</h3>
+                        <p class="text-slate-600 mb-4">After the transform, we get a simple, elegant expression for the energy \(E(k)\) for each momentum wave.</p>
+                        <div class="p-4 rounded-lg" style="background-color: #e8eaf6;">
+                             <p class="math text-lg">\( E(k) = \epsilon_0 - 2t \cos(ka) \)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="visualization" class="mb-20">
+            <h2 class="text-3xl text-center mb-4" style="color: #374c80;">Visualizing the Result: The Band Structure</h2>
+            <p class="text-center text-slate-600 mb-10 max-w-3xl mx-auto">This equation gives us the electronic "band structure". It's a fundamental property that determines if a material is a conductor, insulator, or semiconductor. The chart below plots this energy-momentum relationship.</p>
+            <div class="card p-6">
+                <div class="chart-container">
+                    <canvas id="bandStructureChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-slate-500 mt-4">This plot shows the allowed energy levels (y-axis) for electrons at different crystal momenta (x-axis) within the first Brillouin Zone.</p>
+            </div>
+        </section>
+        
+        <section id="significance">
+            <h2 class="text-3xl text-center mb-10" style="color: #374c80;">Why It Matters</h2>
+            <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="card p-6">
+                    <p class="text-4xl mb-2">💡</p>
+                    <h3 class="font-bold">Simplification</h3>
+                    <p class="text-sm text-slate-600">Turns hard differential equations into simpler algebra.</p>
+                </div>
+                <div class="card p-6">
+                    <p class="text-4xl mb-2">📈</p>
+                    <h3 class="font-bold">Band Structure</h3>
+                    <p class="text-sm text-slate-600">Directly reveals the electronic properties of materials.</p>
+                </div>
+                 <div class="card p-6">
+                    <p class="text-4xl mb-2">🌊</p>
+                    <h3 class="font-bold">Quasi-Particles</h3>
+                    <p class="text-sm text-slate-600">Provides a framework for describing collective excitations.</p>
+                </div>
+                 <div class="card p-6">
+                    <p class="text-4xl mb-2">⚙️</p>
+                    <h3 class="font-bold">Efficiency</h3>
+                    <p class="text-sm text-slate-600">Makes computational modeling of materials possible.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="text-center py-8">
+        <p class="text-sm text-slate-500">Infographic generated based on the principles of Hamiltonian transformation in solid-state physics.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('bandStructureChart').getContext('2d');
+            
+            const numPoints = 200;
+            const t = 1; 
+            const epsilon0 = 0.5;
+            const a = 1;
+
+            const kPoints = [];
+            for (let i = 0; i <= numPoints; i++) {
+                kPoints.push((-Math.PI / a) + (i * 2 * Math.PI / (a * numPoints)));
+            }
+            const energyValues = kPoints.map(k => epsilon0 - 2 * t * Math.cos(k * a));
+
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: kPoints,
+                    datasets: [{
+                        label: 'Energy E(k)',
+                        data: energyValues,
+                        borderColor: '#bc5090',
+                        backgroundColor: 'rgba(188, 80, 144, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Momentum (k)',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (Math.abs(value + Math.PI) < 0.01) return '-π/a';
+                                    if (Math.abs(value - Math.PI) < 0.01) return 'π/a';
+                                    if (Math.abs(value) < 0.01) return '0';
+                                    return null;
+                                },
+                                font: { size: 12, family: "'Roboto Mono', monospace" }
+                            },
+                            grid: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy (E)',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            grid: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    }
+                                    return 'k ≈ ' + parseFloat(label).toFixed(2);
+                                },
+                                label: function(context) {
+                                    return 'E(k) ≈ ' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
